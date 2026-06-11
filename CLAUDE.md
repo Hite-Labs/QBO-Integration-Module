@@ -86,6 +86,62 @@ Work through these in order. Run the test suite after each one. Do not proceed t
 
 See `TESTING.md` for the full test protocol, report format, and ground rules.
 
+## Current status
+
+**All 8 sandbox milestones PASS.** Code is production-ready. Work is paused pending project go-ahead.
+
+## Next session: production verification
+
+When the project gets the green light, pick up here. All sandbox milestones are done — this is the production checklist only.
+
+### Prerequisites (do these before opening the code)
+
+1. **Upgrade QBO account to Simple Start** (minimum tier for API access — Self-Employed does not work)
+2. **Get your production Realm ID** — log into QuickBooks Online, go to Settings → Account and Settings → the URL will contain your company ID, e.g. `https://app.qbo.intuit.com/app/homepage?companyId=123456789`
+3. **Add production redirect URI in Intuit portal** — go to [developer.intuit.com](https://developer.intuit.com) → your app → Keys & OAuth → **Production** tab → add `http://localhost:8000/callback`
+
+### .env changes
+
+```
+QB_CLIENT_ID=<same — from Development tab, or create a Production app>
+QB_CLIENT_SECRET=<same>
+QB_REALM_ID=<your real company ID>
+QB_REDIRECT_URI=http://localhost:8000/callback
+QB_ENVIRONMENT=production        ← only change needed in the code
+QB_SCOPES=com.intuit.quickbooks.accounting
+PORT=8000
+```
+
+### Re-authorize against production
+
+```
+npm start
+# open http://localhost:8000/connect in browser
+# complete QBO consent flow for your real company
+# "Connected!" → tokens saved to data/tokens.json
+```
+
+### Production verification checklist
+
+Run each milestone test against production and confirm the manual items that sandbox couldn't verify:
+
+| Check | Command | Manual verification |
+|---|---|---|
+| Connectivity | `GET /companyinfo` | Returns your real company name |
+| M1 re-verify | `npm run test:m1` | tokens.json has production realmId |
+| M2 re-verify | `npm run test:m2` | Customer appears in real QBO UI |
+| M3 re-verify | `npm run test:m3` | Item appears in Products & Services |
+| M4 re-verify | `npm run test:m4` | Estimate visible in QBO UI |
+| M5 re-verify | `npm run test:m5` | 3-line porch estimate, $4250 total |
+| M6 — email delivery | `npm run test:m6` | **Check inbox** — email actually arrives (sandbox couldn't do this) |
+| M7 — Accepted status | `npm run test:m7` | Click approval link in email → re-run `/test/status` → confirms `Accepted` with date |
+| M8 typecheck | `npm run test:m8` | All 12 checks pass |
+
+### Sandbox limitations that production resolves
+
+- `sendEstimate` — sandbox returned a 500 NPE; production will deliver real email
+- `getEstimateStatus` Accepted — sandbox QBO UI has no Accept button; production customers get an approval link in the email they can click
+
 ## Common failure modes
 
 - **401 with valid token** → wrong API host — check `QB_ENVIRONMENT=sandbox` maps to `sandbox-quickbooks.api.intuit.com`
