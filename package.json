@@ -1,0 +1,30 @@
+{
+  "name": "qbo-integration-module",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node --loader ts-node/esm src/server.ts",
+    "dev": "node --watch --loader ts-node/esm src/server.ts",
+    "test:m1": "npx ts-node harness/tests/m1-auth.test.ts",
+    "test:m2": "npx ts-node harness/tests/m2-customer.test.ts",
+    "test:m3": "npx ts-node harness/tests/m3-item.test.ts",
+    "test:m4": "npx ts-node harness/tests/m4-estimate-simple.test.ts",
+    "test:m5": "npx ts-node harness/tests/m5-estimate-porch.test.ts",
+    "test:m6": "npx ts-node harness/tests/m6-send.test.ts",
+    "test:m7": "npx ts-node harness/tests/m7-status.test.ts",
+    "test:m8": "npx ts-node harness/tests/m8-interface.test.ts",
+    "test:all": "npx ts-node harness/tests/run-all.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "axios": "^1.7.0",
+    "dotenv": "^16.4.0",
+    "express": "^4.19.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.0",
+    "@types/node": "^22.0.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.5.0"
+  }
+}
